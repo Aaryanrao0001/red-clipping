@@ -5,7 +5,7 @@ import os
 import base64
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import yaml
 import logging
 
@@ -39,7 +39,7 @@ class CredentialManager:
             # Ensure key is properly formatted
             if len(key) != 44:  # Fernet key should be 44 bytes when base64 encoded
                 # Derive key from password
-                kdf = PBKDF2(
+                kdf = PBKDF2HMAC(
                     algorithm=hashes.SHA256(),
                     length=32,
                     salt=b'red-clipping-salt',  # In production, use random salt
