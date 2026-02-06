@@ -14,6 +14,7 @@ An intelligent, AI-powered system for automatically analyzing videos, extracting
 - 🎨 **Format Optimization**: Automatic aspect ratio conversion (9:16 for vertical video)
 - 🔄 **Retry Logic**: Automatic retry for failed uploads with exponential backoff
 - 🎯 **Consistent Hashtags**: Option to maintain consistent hashtags across all platforms
+- 🖥️ **Simple UI**: Tkinter-based graphical interface for easy system control and configuration
 
 ## System Architecture
 
@@ -45,7 +46,8 @@ An intelligent, AI-powered system for automatically analyzing videos, extracting
     │   ├── browser_manager.py
     │   ├── credential_manager.py
     │   └── state_manager.py
-    └── main.py            # Main orchestrator
+    ├── main.py            # Main orchestrator
+    └── simple_ui.py       # Simple graphical UI
 ```
 
 ## Installation
@@ -92,6 +94,8 @@ Key settings:
 - `target_aspect_ratio`: Video aspect ratio (default: 9:16)
 - `min_upload_delay_minutes`: Delay between uploads (default: 60 min)
 - `consistent_hashtags`: Use same hashtags across platforms (default: true)
+- `default_description`: Default description for all clips (overrides AI generation when set)
+- `default_hashtags_override`: Default hashtags for all clips (overrides AI generation when set)
 
 ### 2. Platform Credentials (`config/platform_credentials.yaml`)
 
@@ -112,6 +116,25 @@ python src/main.py credentials --platform github_api --field token --value "your
 Customize AI prompts for video analysis, caption generation, and hashtag generation.
 
 ## Usage
+
+### Using the Simple UI
+
+The system includes a graphical user interface for easy operation:
+
+```bash
+python src/simple_ui.py
+```
+
+**UI Features**:
+- **Default Description**: Set a custom description that will be used for all clips instead of AI-generated captions
+- **Default Hashtags**: Set custom hashtags (comma-separated) that will be used for all clips instead of AI-generated hashtags
+- **Save Configuration**: Saves your default metadata settings to `config/settings.yaml`
+- **Start Processing**: Begins processing all videos in the input directory with automatic upload scheduling
+- **Logs**: Real-time log display showing processing progress and status
+
+**Note**: The default metadata settings enforce consistent descriptions and hashtags across all uploads until you change them. This is useful when you want to maintain a specific message or branding across all your content. Leave fields empty to use AI-generated captions and hashtags instead.
+
+### Using the Command Line
 
 ### Process Videos
 

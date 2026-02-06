@@ -32,6 +32,10 @@ class MetadataGenerator:
         }
         self.default_hashtags = config.get('default_hashtags', [])
         
+        # Default metadata overrides from config
+        self.default_description = config.get('default_description', '')
+        self.default_hashtags_override = config.get('default_hashtags_override', '')
+        
         # Store generated hashtags for consistency
         self._base_hashtags = None
     
@@ -47,6 +51,11 @@ class MetadataGenerator:
         Returns:
             Generated caption string
         """
+        # If default description is set in config, use it instead of AI generation
+        if self.default_description and self.default_description.strip():
+            logger.info(f"Using default description from config for {platform}")
+            return self.default_description.strip()
+        
         # Get platform-specific guidelines
         guidelines = self.prompts.get('platform_caption_guidelines', {}).get(platform, {})
         
@@ -116,6 +125,17 @@ class MetadataGenerator:
         Returns:
             List of hashtags (without # symbol)
         """
+        # If default hashtags override is set in config, use it instead of AI generation
+        if self.default_hashtags_override and self.default_hashtags_override.strip():
+            logger.info(f"Using default hashtags override from config for {platform}")
+            # Parse comma-separated hashtags
+            hashtags = [tag.strip().lstrip('#') for tag in self.default_hashtags_override.split(',')]
+            hashtags = [tag for tag in hashtags if tag]  # Remove empty strings
+            
+            # Limit to platform maximum
+            max_tags = self.max_hashtags.get(platform, 30)
+            return hashtags[:max_tags]
+        
         if use_consistent is None:
             use_consistent = self.consistent_hashtags
         

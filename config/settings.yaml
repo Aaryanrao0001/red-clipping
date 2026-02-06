@@ -109,6 +109,10 @@ metadata:
     - "viral"
     - "trending"
     - "shorts"
+  # Default description for all clips (overrides AI generation if set)
+  default_description: ""
+  # Default hashtags override (overrides AI generation if set, comma-separated)
+  default_hashtags_override: ""
 
 # Logging Settings
 logging:
