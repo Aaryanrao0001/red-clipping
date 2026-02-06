@@ -4,7 +4,9 @@ An intelligent, AI-powered system for automatically analyzing videos, extracting
 
 ## Features
 
-- 🤖 **AI-Powered Analysis**: Uses GitHub Models API (GPT-4) to identify viral-worthy video segments
+- 🤖 **AI-Powered Analysis**: Uses GitHub Models API (GPT-4) to identify viral-worthy video segments based on transcribed content
+- 🎙️ **Whisper Audio Transcription**: Local audio transcription using OpenAI's Whisper for accurate speech-to-text conversion
+- 🎬 **Complete Video Pipeline**: Automated pipeline from video → audio extraction → transcription → AI analysis → clip generation
 - ✂️ **Automated Clip Extraction**: FFmpeg-based video processing with quality optimization
 - 📱 **Multi-Platform Publishing**: Automated uploads to Instagram, YouTube, and TikTok
 - 🏷️ **Smart Metadata Generation**: AI-generated captions and hashtags optimized for each platform
@@ -59,7 +61,7 @@ git clone https://github.com/Aaryanrao0001/red-clipping.git
 cd red-clipping
 ```
 
-2. **Install FFmpeg** (required for video processing):
+2. **Install FFmpeg** (required for video processing and audio extraction):
 ```bash
 # Ubuntu/Debian
 sudo apt-get install ffmpeg
@@ -75,6 +77,15 @@ brew install ffmpeg
 ```bash
 pip install -r requirements.txt
 ```
+
+**Note**: The installation includes OpenAI's Whisper for audio transcription. The first time you run video analysis, Whisper will download its model (~140MB for the 'base' model). Other available models:
+- `tiny` (~39MB) - Fastest, less accurate
+- `base` (~74MB) - Default, good balance
+- `small` (~244MB) - Better accuracy
+- `medium` (~769MB) - High accuracy
+- `large` (~1550MB) - Best accuracy
+
+You can change the model in `config/settings.yaml` under `ai.whisper_model_size`.
 
 4. **Set up environment variables**:
 ```bash
@@ -210,14 +221,41 @@ python src/main.py history --platform youtube --limit 10
 
 ## Workflow
 
+The system implements a robust pipeline for video processing:
+
 1. **Video Discovery**: System scans `input/videos/` for video files
-2. **AI Analysis**: Videos are analyzed to identify viral-worthy segments (15-60s)
-3. **Clip Extraction**: Selected segments are extracted using FFmpeg
-4. **Format Optimization**: Clips are optimized for each platform (aspect ratio, quality, file size)
-5. **Metadata Generation**: AI generates platform-specific captions and hashtags
-6. **Upload Scheduling**: Uploads are scheduled with appropriate delays
-7. **Execution**: Selenium-based automation uploads clips to each platform
-8. **Tracking**: Upload status is tracked in history and queue
+2. **Audio Extraction**: FFmpeg extracts audio from each video (16kHz mono WAV)
+3. **Whisper Transcription**: OpenAI's Whisper transcribes the audio to text locally
+4. **AI Analysis**: GPT-4 analyzes the transcript to identify viral-worthy segments (15-60s)
+5. **Clip Extraction**: Selected segments are extracted using FFmpeg based on timestamps
+6. **Format Optimization**: Clips are optimized for each platform (aspect ratio, quality, file size)
+7. **Metadata Generation**: AI generates platform-specific captions and hashtags
+8. **Upload Scheduling**: Uploads are scheduled with appropriate delays
+9. **Execution**: Selenium-based automation uploads clips to each platform
+10. **Tracking**: Upload status is tracked in history and queue
+
+### Pipeline Details
+
+**Video Analysis Pipeline:**
+```
+Video File
+    ↓
+Audio Extraction (FFmpeg)
+    ↓
+Transcription (Whisper)
+    ↓
+AI Analysis (GPT-4 + Transcript)
+    ↓
+Viral Segments Identified
+    ↓
+Clips Extracted
+```
+
+This approach ensures:
+- ✅ No raw video files sent to text-based AI models
+- ✅ Accurate content analysis based on actual speech
+- ✅ Robust error handling at each pipeline stage
+- ✅ Clear failure messages for troubleshooting
 
 ## Key Features Explained
 
@@ -288,7 +326,13 @@ The system uses the GPT-4 model for:
 ## Troubleshooting
 
 ### FFmpeg not found
-Install FFmpeg using your system's package manager.
+Install FFmpeg using your system's package manager (see Installation section).
+
+### Whisper transcription issues
+- **First run is slow**: Whisper downloads the model on first use (~140MB for 'base' model)
+- **Out of memory**: Try a smaller model ('tiny' or 'base') in `config/settings.yaml`
+- **Transcription empty**: Check that the video has clear audio and is not muted
+- **Model download fails**: Check internet connection; models are downloaded from Hugging Face
 
 ### Browser automation fails
 - Ensure you're not in headless mode for initial setup

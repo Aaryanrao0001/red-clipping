@@ -8,6 +8,8 @@ paths:
   output_logs: "output/logs"
   cache_ai: "cache/ai_responses"
   cache_temp: "cache/temp_processing"
+  cache_temp_audio: "cache/ai_responses/temp_audio"
+  cache_temp_frames: "cache/ai_responses/temp_frames"
   state_files: "cache"
 
 # Video Processing Settings
@@ -41,6 +43,9 @@ ai:
   enable_cache: true
   # Cache expiration in hours
   cache_expiration_hours: 24
+  # Whisper model size (tiny, base, small, medium, large)
+  # base is recommended for good balance of speed and accuracy
+  whisper_model_size: "base"
 
 # Platform-Specific Settings
 platforms:

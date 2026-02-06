@@ -80,3 +80,9 @@ cache/upload_queue.json
 # AI response cache
 cache/ai_responses/*.json
 cache/temp_processing/*
+cache/ai_responses/temp_audio/
+cache/ai_responses/temp_frames/
+
+# Whisper models (downloaded automatically)
+*.pt
+~/.cache/whisper/
