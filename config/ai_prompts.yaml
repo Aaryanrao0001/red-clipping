@@ -1,0 +1,147 @@
+# AI Prompts for Video Analysis and Metadata Generation
+
+# Section 3.1: Video Analysis Prompt
+video_analysis_prompt: |
+  You are an expert video content analyzer specializing in identifying viral-worthy moments for short-form social media platforms (Instagram Reels, YouTube Shorts, TikTok).
+  
+  Analyze the provided video and identify segments that have high viral potential based on the following criteria:
+  - High engagement moments (surprising, funny, emotional, or informative)
+  - Clear narrative or message within 15-60 seconds
+  - Strong visual or audio hooks in the first 3 seconds
+  - Potential for viewer retention and completion
+  - Relevance to current trends
+  
+  For each identified segment, provide:
+  1. Start timestamp (in seconds)
+  2. End timestamp (in seconds)
+  3. Viral score (0-100)
+  4. Hook description (what makes it engaging in the first 3 seconds)
+  5. Category (humor, education, inspiration, entertainment, etc.)
+  6. Key themes/topics
+  
+  Return the analysis in the following JSON format:
+  {
+    "segments": [
+      {
+        "start_time": 0.0,
+        "end_time": 30.0,
+        "viral_score": 85,
+        "hook": "Unexpected reaction in first 2 seconds",
+        "category": "humor",
+        "themes": ["reaction", "surprise", "comedy"],
+        "description": "Brief description of the segment"
+      }
+    ],
+    "overall_assessment": "Brief overall assessment of the video's viral potential"
+  }
+
+# Section 3.3: Segment Filtering Criteria
+segment_filtering_prompt: |
+  Review the following video segments and rank them by viral potential.
+  Consider:
+  - Hook strength (first 3 seconds)
+  - Emotional impact
+  - Shareability
+  - Trend alignment
+  - Visual quality
+  
+  Return only the top segments that score above 70 in viral potential.
+
+# Section 4.2: Quality Enhancement Prompt
+quality_enhancement_prompt: |
+  Analyze the video segment for quality improvements needed:
+  - Color correction requirements
+  - Audio normalization needs
+  - Stabilization requirements
+  - Brightness/contrast adjustments
+  
+  Return recommendations in JSON format with specific FFmpeg filter parameters.
+
+# Section 5.1: Caption Generation Prompt
+caption_generation_prompt: |
+  Generate an engaging caption for this video clip intended for {platform}.
+  
+  The caption should:
+  - Be attention-grabbing and concise
+  - Include a hook in the first line
+  - Match the tone of the content ({category})
+  - Be optimized for {platform} (character limits and style)
+  - Include a call-to-action
+  - Be culturally relevant and trend-aware
+  
+  Key themes: {themes}
+  Content description: {description}
+  
+  Return ONLY the caption text without additional formatting or quotes.
+
+# Section 5.2: Hashtag Generation Prompt
+hashtag_generation_prompt: |
+  Generate relevant hashtags for this video clip for {platform}.
+  
+  Requirements:
+  - Include a mix of trending, niche, and broad hashtags
+  - Prioritize hashtags with high engagement potential
+  - Match the content category: {category}
+  - Include theme-based hashtags: {themes}
+  - Follow {platform} best practices
+  - Maximum {max_hashtags} hashtags
+  - Ensure consistent core hashtags across all platforms when specified
+  
+  Return hashtags as a JSON array: ["hashtag1", "hashtag2", ...]
+  Do NOT include the # symbol in the hashtags.
+
+# Platform-Specific Caption Guidelines
+platform_caption_guidelines:
+  instagram:
+    max_length: 2200
+    style: "casual, emoji-friendly, story-driven"
+    hashtag_placement: "end of caption or first comment"
+  
+  youtube:
+    max_length: 5000
+    style: "informative, keyword-rich, structured"
+    hashtag_placement: "end of description, max 15 hashtags"
+  
+  tiktok:
+    max_length: 2200
+    style: "trendy, challenge-oriented, conversational"
+    hashtag_placement: "integrated in caption"
+
+# Hashtag Strategy
+hashtag_strategy:
+  consistent_core_tags:
+    - "viral"
+    - "trending"
+    - "fyp"
+    - "foryou"
+  
+  category_tags:
+    humor:
+      - "funny"
+      - "comedy"
+      - "laugh"
+      - "humor"
+    education:
+      - "learn"
+      - "educational"
+      - "tutorial"
+      - "howto"
+    inspiration:
+      - "motivation"
+      - "inspire"
+      - "success"
+      - "mindset"
+    entertainment:
+      - "entertainment"
+      - "fun"
+      - "amazing"
+      - "awesome"
+
+# Section 6: Upload Automation Prompts
+upload_verification_prompt: |
+  Verify that the upload was successful by checking for:
+  - Confirmation message or success indicator
+  - Video appearing in profile/drafts
+  - No error messages
+  
+  Return a JSON object: {"success": true/false, "error_message": "if any"}
