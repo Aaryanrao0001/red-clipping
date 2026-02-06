@@ -134,7 +134,7 @@ def test_error_handling():
         
         if 'error' in result:
             logger.info("✓ Error handling works for non-existent file")
-            logger.info(f"  Error message: {result.get('overall_assessment')}")
+            logger.info(f"  Error: {result.get('error')}")
             return True
         else:
             logger.error("✗ No error reported for non-existent file")

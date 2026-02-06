@@ -229,7 +229,7 @@ class VideoAnalyzer:
             '-i', video_path,
             '-vn',  # No video
             '-acodec', 'pcm_s16le',  # PCM format for Whisper
-            '-ar', '16000',  # 16kHz sample rate (Whisper's native rate)
+            '-ar', '16000',  # 16kHz sample rate (pre-convert to Whisper's expected format)
             '-ac', '1',  # Mono audio
             '-y',  # Overwrite output file
             output_audio_path
@@ -283,7 +283,7 @@ class VideoAnalyzer:
             audio_path: Path to audio file
             
         Returns:
-            Dictionary with transcription results or None if failed
+            Dictionary with transcription results including word-level timestamps, or None if failed
         """
         if not audio_path or not os.path.exists(audio_path):
             logger.error(f"Audio file not found: {audio_path}")
@@ -295,8 +295,8 @@ class VideoAnalyzer:
             
             logger.info(f"Transcribing audio: {audio_path}")
             
-            # Transcribe audio
-            result = model.transcribe(audio_path)
+            # Transcribe audio with word-level timestamps
+            result = model.transcribe(audio_path, word_timestamps=True)
             
             # Validate result
             if not result or 'text' not in result:
@@ -311,6 +311,10 @@ class VideoAnalyzer:
             
             logger.info(f"Transcription completed. Length: {len(transcript_text)} characters")
             logger.debug(f"Transcript preview: {transcript_text[:200]}...")
+            
+            # Log if word-level timestamps are available
+            if 'segments' in result and result['segments']:
+                logger.info(f"Word-level timestamps available for {len(result['segments'])} segments")
             
             return result
         
@@ -474,9 +478,41 @@ class VideoAnalyzer:
             # Get analysis prompt
             analysis_prompt = self.prompts.get('video_analysis_prompt', '')
             
+            # Check transcript length and truncate if necessary
+            # GPT-4o has ~128k token context, but we'll be conservative
+            # Estimate ~4 chars per token, and leave room for prompt + response
+            max_transcript_chars = 50000  # ~12.5k tokens for transcript
+            
+            if len(transcript_text) > max_transcript_chars:
+                logger.warning(f"Transcript is very long ({len(transcript_text)} chars). Truncating to {max_transcript_chars} chars.")
+                # Keep first 75% and last 25% to preserve beginning and end
+                first_part_len = int(max_transcript_chars * 0.75)
+                last_part_len = max_transcript_chars - first_part_len
+                
+                transcript_text = (
+                    transcript_text[:first_part_len] + 
+                    "\n\n[... middle section truncated for length ...]\n\n" +
+                    transcript_text[-last_part_len:]
+                )
+                logger.info(f"Truncated transcript to {len(transcript_text)} chars")
+            
             # Build comprehensive prompt with transcript
             prompt = analysis_prompt
             prompt += f"\n\n## Video Transcript\n\nThe following is the complete transcript of the video:\n\n\"\"\"\n{transcript_text}\n\"\"\"\n"
+            
+            # Add segment timing information if available
+            if 'segments' in transcription_result and transcription_result['segments']:
+                prompt += f"\n\n## Transcript Segments with Timestamps\n"
+                prompt += "The following segments show the exact timing of spoken content:\n\n"
+                for i, seg in enumerate(transcription_result['segments'][:20]):  # First 20 segments
+                    start = seg.get('start', 0)
+                    end = seg.get('end', 0)
+                    text = seg.get('text', '').strip()
+                    if text:
+                        prompt += f"[{start:.1f}s - {end:.1f}s]: {text}\n"
+                
+                if len(transcription_result['segments']) > 20:
+                    prompt += f"... and {len(transcription_result['segments']) - 20} more segments\n"
             
             # Add video metadata if available
             if video_metadata:
