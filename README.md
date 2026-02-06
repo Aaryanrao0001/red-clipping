@@ -47,7 +47,8 @@ An intelligent, AI-powered system for automatically analyzing videos, extracting
     │   ├── credential_manager.py
     │   └── state_manager.py
     ├── main.py            # Main orchestrator
-    └── simple_ui.py       # Simple graphical UI
+    ├── simple_ui.py       # Simple graphical UI
+    └── modern_ui.py       # Modern UI with CustomTkinter
 ```
 
 ## Installation
@@ -117,9 +118,32 @@ Customize AI prompts for video analysis, caption generation, and hashtag generat
 
 ## Usage
 
+### Using the Modern UI (Recommended)
+
+The system includes a modern, dark-mode friendly graphical interface built with CustomTkinter:
+
+```bash
+python src/modern_ui.py
+```
+
+**Modern UI Features**:
+- 📁 **File Selection**: Integrated file picker to select and copy videos to input directory
+- ⚙️ **Configuration Dashboard**: 
+  - Default description and hashtags inputs
+  - Min Viral Score slider (0-100)
+  - Max Clips slider (1-10)
+  - Platform selection checkboxes (Instagram, YouTube, TikTok)
+  - Auto-upload toggle
+- 📊 **Real-time Logs**: Color-coded console with emoji indicators for status updates
+- 🎨 **Dark/Light Themes**: Switch between appearance modes
+- ▶️ **Start/Stop Controls**: Graceful processing control
+- 💾 **Save Configuration**: Persist settings to `config/settings.yaml`
+
+See [Modern UI Guide](docs/MODERN_UI_GUIDE.md) for detailed usage instructions.
+
 ### Using the Simple UI
 
-The system includes a graphical user interface for easy operation:
+The system also includes a basic graphical user interface:
 
 ```bash
 python src/simple_ui.py
@@ -276,6 +300,11 @@ Install FFmpeg using your system's package manager.
 - Check GitHub token is valid
 - Verify API endpoint is accessible
 - Check logs in `output/logs/app.log`
+- **New**: The system now includes robust error handling for API responses:
+  - Detailed logging of API status codes and responses
+  - Automatic handling of markdown code blocks in JSON responses
+  - Graceful fallback when API returns invalid or empty responses
+  - If you see "Failed to parse API response as JSON", check the logs for the full error details including the raw API response
 
 ### Upload scheduling issues
 - Ensure scheduler is running (`--auto-upload` flag)
