@@ -132,7 +132,7 @@ python src/simple_ui.py
 - **Start Processing**: Begins processing all videos in the input directory with automatic upload scheduling
 - **Logs**: Real-time log display showing processing progress and status
 
-**Note**: The default metadata settings enforce consistent descriptions and hashtags across all uploads until you change them. This is useful when you want to maintain a specific message or branding across all your content.
+**Note**: The default metadata settings enforce consistent descriptions and hashtags across all uploads until you change them. This is useful when you want to maintain a specific message or branding across all your content. Leave fields empty to use AI-generated captions and hashtags instead.
 
 ### Using the Command Line
 

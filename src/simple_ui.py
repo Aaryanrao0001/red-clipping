@@ -43,6 +43,9 @@ class VideoClippingUI:
         
         # Setup logging to redirect to text area
         self.setup_logging()
+        
+        # Handle window close event
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def setup_ui(self):
         """Setup UI components"""
@@ -208,7 +211,6 @@ class VideoClippingUI:
         
         # Start processing in a separate thread
         self.processing_thread = threading.Thread(target=self.run_processing)
-        self.processing_thread.daemon = True
         self.processing_thread.start()
         
         self.is_processing = True
@@ -310,6 +312,23 @@ class VideoClippingUI:
         self.log_text.config(state=tk.NORMAL)
         self.log_text.delete('1.0', tk.END)
         self.log_text.config(state=tk.DISABLED)
+    
+    def on_closing(self):
+        """Handle window close event"""
+        if self.is_processing:
+            if messagebox.askokcancel("Quit", "Processing is still running. Do you want to stop and quit?"):
+                # Stop the system if it's running
+                if self.system:
+                    try:
+                        self.system.stop_scheduler()
+                        self.log_message("System stopped by user")
+                    except Exception as e:
+                        self.log_message(f"Error stopping system: {e}")
+                
+                self.is_processing = False
+                self.root.destroy()
+        else:
+            self.root.destroy()
 
 
 def main():
