@@ -131,13 +131,52 @@ class VideoAnalyzer:
                 json=payload,
                 timeout=60
             )
-            response.raise_for_status()
             
-            result = response.json()
-            return result['choices'][0]['message']['content']
+            # Log status code for debugging
+            logger.debug(f"API response status code: {response.status_code}")
+            
+            # Check if response is successful
+            if response.status_code != 200:
+                logger.error(f"API returned non-200 status code: {response.status_code}")
+                logger.error(f"Response text: {response.text[:500]}")  # Log first 500 chars
+                response.raise_for_status()
+            
+            # Check if response has content
+            if not response.text or response.text.strip() == '':
+                logger.error("API returned empty response")
+                raise ValueError("Empty response from API")
+            
+            # Log raw response for debugging (first 200 chars)
+            logger.debug(f"Raw API response (first 200 chars): {response.text[:200]}")
+            
+            # Parse JSON response
+            try:
+                result = response.json()
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse API response as JSON: {e}")
+                logger.error(f"Response text: {response.text[:500]}")
+                raise ValueError(f"Invalid JSON response from API: {e}")
+            
+            # Extract content from response
+            if 'choices' not in result or len(result['choices']) == 0:
+                logger.error(f"API response missing 'choices' key or empty choices")
+                logger.error(f"Response structure: {json.dumps(result, indent=2)[:500]}")
+                raise ValueError("Invalid API response structure")
+            
+            content = result['choices'][0]['message']['content']
+            
+            # Validate content is not empty
+            if not content or content.strip() == '':
+                logger.error("API returned empty content in message")
+                raise ValueError("Empty content from API")
+            
+            return content
         
         except requests.exceptions.RequestException as e:
             logger.error(f"API request failed: {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                logger.error(f"Response status: {e.response.status_code}")
+                logger.error(f"Response text: {e.response.text[:500]}")
             raise
     
     def analyze_video(self, video_path, video_metadata=None):
@@ -181,12 +220,34 @@ class VideoAnalyzer:
             # Try to extract JSON from the response
             response_text = response_text.strip()
             
+            # Log raw response for debugging (first 300 chars)
+            logger.debug(f"Raw response text (first 300 chars): {response_text[:300]}")
+            
             # Remove markdown code blocks if present
+            # Handle both ```json and ``` formats
             if response_text.startswith('```'):
                 lines = response_text.split('\n')
-                response_text = '\n'.join(lines[1:-1])
+                # Remove first line (``` or ```json)
+                lines = lines[1:]
+                # Remove last line if it's just ```
+                if lines and lines[-1].strip() == '```':
+                    lines = lines[:-1]
+                response_text = '\n'.join(lines).strip()
+                logger.debug("Stripped markdown code blocks from response")
             
-            result = json.loads(response_text)
+            # Try to parse JSON
+            try:
+                result = json.loads(response_text)
+            except json.JSONDecodeError as e:
+                logger.error(f"Failed to parse API response as JSON: {e}")
+                logger.error(f"Response text after processing: {response_text[:500]}")
+                # Return a basic structure with error info
+                return {
+                    'segments': [],
+                    'overall_assessment': 'Analysis failed: Invalid JSON response from API',
+                    'error': str(e),
+                    'raw_response': response_text[:500]  # Include first 500 chars for debugging
+                }
             
             # Validate result structure
             if 'segments' not in result:
@@ -199,16 +260,8 @@ class VideoAnalyzer:
             logger.info(f"Analysis complete: found {len(result.get('segments', []))} segments")
             return result
         
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse API response as JSON: {e}")
-            # Return a basic structure
-            return {
-                'segments': [],
-                'overall_assessment': 'Analysis failed: Invalid JSON response',
-                'error': str(e)
-            }
         except Exception as e:
-            logger.error(f"Video analysis failed: {e}")
+            logger.error(f"Video analysis failed: {e}", exc_info=True)
             raise
     
     def filter_segments(self, segments, min_score=70):
