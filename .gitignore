@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+output/logs/
+
+# Cache and temporary files
+cache/
+*.cache
+.cache/
+temp/
+tmp/
+*.tmp
+
+# Browser profiles
+cache/browser_profiles/
+
+# Encryption keys
+cache/.encryption_key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Output files (keep structure, ignore content)
+output/clips/*.mp4
+output/clips/*.mov
+output/clips/*.avi
+output/thumbnails/*.jpg
+output/thumbnails/*.png
+
+# Input videos (keep structure, ignore large files)
+input/videos/*.mp4
+input/videos/*.mov
+input/videos/*.avi
+input/videos/*.mkv
+
+# State files (contain sensitive upload history)
+cache/upload_history.json
+cache/upload_queue.json
+
+# AI response cache
+cache/ai_responses/*.json
+cache/temp_processing/*

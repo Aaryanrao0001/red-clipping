@@ -1,0 +1,122 @@
+# General Settings for Video Clipping System
+
+# Paths Configuration
+paths:
+  input_videos: "input/videos"
+  output_clips: "output/clips"
+  output_thumbnails: "output/thumbnails"
+  output_logs: "output/logs"
+  cache_ai: "cache/ai_responses"
+  cache_temp: "cache/temp_processing"
+  state_files: "cache"
+
+# Video Processing Settings
+video:
+  # Minimum clip duration in seconds
+  min_clip_duration: 15
+  # Maximum clip duration in seconds
+  max_clip_duration: 60
+  # Target aspect ratio (9:16 for vertical video)
+  target_aspect_ratio: "9:16"
+  # Video quality (crf value for FFmpeg, lower is better, 18-28 recommended)
+  quality_crf: 23
+  # Audio bitrate
+  audio_bitrate: "128k"
+  # Video codec
+  video_codec: "libx264"
+  # Audio codec
+  audio_codec: "aac"
+
+# AI Analysis Settings
+ai:
+  # GitHub Models API endpoint
+  api_endpoint: "https://models.inference.ai.azure.com/chat/completions"
+  # Model to use for analysis
+  model: "gpt-4o"
+  # Temperature for AI responses (0.0 - 1.0)
+  temperature: 0.7
+  # Maximum tokens for AI responses
+  max_tokens: 4000
+  # Cache AI responses to avoid duplicate API calls
+  enable_cache: true
+  # Cache expiration in hours
+  cache_expiration_hours: 24
+
+# Platform-Specific Settings
+platforms:
+  instagram:
+    # Maximum video duration in seconds
+    max_duration: 90
+    # Required aspect ratio
+    aspect_ratio: "9:16"
+    # Maximum file size in MB
+    max_file_size_mb: 100
+  
+  youtube:
+    # Maximum video duration in seconds
+    max_duration: 60
+    # Required aspect ratio
+    aspect_ratio: "9:16"
+    # Maximum file size in MB
+    max_file_size_mb: 100
+  
+  tiktok:
+    # Maximum video duration in seconds
+    max_duration: 60
+    # Required aspect ratio
+    aspect_ratio: "9:16"
+    # Maximum file size in MB
+    max_file_size_mb: 100
+
+# Upload Scheduling Settings
+scheduling:
+  # Minimum delay between uploads in minutes
+  min_upload_delay_minutes: 60
+  # Maximum retry attempts for failed uploads
+  max_retry_attempts: 3
+  # Retry delay in minutes
+  retry_delay_minutes: 15
+  # Enable staggered uploads across platforms
+  stagger_uploads: true
+  # Stagger delay in minutes
+  stagger_delay_minutes: 5
+
+# Browser Automation Settings
+browser:
+  # Browser type (chrome, firefox)
+  browser_type: "chrome"
+  # Headless mode (true/false)
+  headless: false
+  # Browser user data directory for persistent sessions
+  user_data_dir: "cache/browser_profiles"
+  # Page load timeout in seconds
+  page_load_timeout: 30
+  # Element wait timeout in seconds
+  element_wait_timeout: 20
+  # Implicit wait in seconds
+  implicit_wait: 10
+
+# Metadata Settings
+metadata:
+  # Enable consistent hashtags across platforms
+  consistent_hashtags: true
+  # Maximum number of hashtags per platform
+  max_hashtags_instagram: 30
+  max_hashtags_youtube: 15
+  max_hashtags_tiktok: 30
+  # Default hashtags to always include
+  default_hashtags:
+    - "viral"
+    - "trending"
+    - "shorts"
+
+# Logging Settings
+logging:
+  # Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+  level: "INFO"
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # Enable file logging
+  file_logging: true
+  # Enable console logging
+  console_logging: true
