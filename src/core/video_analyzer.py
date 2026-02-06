@@ -260,15 +260,6 @@ class VideoAnalyzer:
             logger.info(f"Analysis complete: found {len(result.get('segments', []))} segments")
             return result
         
-        except json.JSONDecodeError as e:
-            # This catch is now redundant but kept for backwards compatibility
-            logger.error(f"Failed to parse API response as JSON: {e}")
-            # Return a basic structure
-            return {
-                'segments': [],
-                'overall_assessment': 'Analysis failed: Invalid JSON response',
-                'error': str(e)
-            }
         except Exception as e:
             logger.error(f"Video analysis failed: {e}", exc_info=True)
             raise

@@ -119,10 +119,12 @@ python src/modern_ui.py
 
 ### Processing Errors
 - Check the Logs tab for detailed error messages
-- Ensure GitHub API token is configured (for AI analysis)
+- Ensure GitHub Models API token is configured (set GITHUB_TOKEN environment variable or use credential manager)
 - Verify video files are not corrupted
 
 ### API Errors
+- The system uses GitHub Models API for AI-powered video analysis
+- Set your GitHub API token: `export GITHUB_TOKEN="your_token"` or via credential manager
 - The system now includes robust error handling for API responses
 - Check logs for detailed error messages including:
   - API status codes
